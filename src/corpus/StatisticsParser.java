@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class Parser {
+public class StatisticsParser {
 
 	private static void parse(String filePath) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(
