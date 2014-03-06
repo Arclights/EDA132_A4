@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import printers.ConfusionPrinterDefault;
 import printers.ConfusionPrinterLatex;
+import data.Word;
 
 public class Evaluation {
 
@@ -17,19 +18,20 @@ public class Evaluation {
 		confTable = new HashMap<>();
 	}
 
-	public void addRow(String[] row) {
-		if (confTable.containsKey(row[4])) {
-			HashMap<String, Integer> tabelRow = confTable.get(row[4]);
-			int count = tabelRow.containsKey(row[5]) ? tabelRow.get(row[5]) : 0;
-			tabelRow.put(row[5], count + 1);
+	public void addRow(Word w) {
+		if (confTable.containsKey(w.getPos())) {
+			HashMap<String, Integer> tabelRow = confTable.get(w.getPos());
+			int count = tabelRow.containsKey(w.getPpos()) ? tabelRow.get(w
+					.getPpos()) : 0;
+			tabelRow.put(w.getPpos(), count + 1);
 		} else {
 			HashMap<String, Integer> tableRow = new HashMap<>();
-			tableRow.put(row[5], 1);
-			confTable.put(row[4], tableRow);
+			tableRow.put(w.getPpos(), 1);
+			confTable.put(w.getPos(), tableRow);
 		}
 
 		totPos++;
-		if (row[4].equals(row[5])) {
+		if (w.getPos().equals(w.getPpos())) {
 			correctPos++;
 		}
 	}
@@ -38,10 +40,10 @@ public class Evaluation {
 		System.out.println("Accuracy: " + (correctPos / totPos));
 	}
 
-	public void printConfusionTable() throws FileNotFoundException{
+	public void printConfusionTable() throws FileNotFoundException {
 		ConfusionPrinterDefault.printConfusionTable(confTable);
 	}
-	
+
 	public void printConfusionTableLatex() throws FileNotFoundException {
 		ConfusionPrinterLatex.printConfusionTable(confTable);
 	}

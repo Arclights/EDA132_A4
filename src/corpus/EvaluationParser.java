@@ -1,32 +1,30 @@
 package corpus;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import static data.Constants.CORPUS_DEVELOPMENT;
+
 import java.io.IOException;
+
+import data.Corpus;
+import data.CorpusFileReader;
+import data.Word;
 
 public class EvaluationParser {
 
-	public static Evaluation eval(String filePath) throws IOException {
+	public static Evaluation eval(Corpus corp) throws IOException {
 
 		Evaluation evaluation = new Evaluation();
-		BufferedReader br = new BufferedReader(new FileReader(
-				new File(filePath)));
-		String line;
-		while ((line = br.readLine()) != null) {
-			String[] row = line.split("\\s");
-			if (row.length > 1) {
-				evaluation.addRow(row);
-			}
+
+		for (Word w : corp) {
+			evaluation.addRow(w);
 		}
-		br.close();
 
 		return evaluation;
 
 	}
 
 	public static void main(String[] args) throws IOException {
-		Evaluation evaluation = eval("data/tagged");
+		Corpus corp = CorpusFileReader.createCorpus(CORPUS_DEVELOPMENT);
+		Evaluation evaluation = eval(corp);
 
 		evaluation.printAccuracy();
 		System.out.println();

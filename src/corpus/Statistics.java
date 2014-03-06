@@ -2,6 +2,8 @@ package corpus;
 
 import java.util.HashMap;
 
+import data.Word;
+
 public class Statistics {
 	private HashMap<String, Integer> wordFreq;
 	private HashMap<String, Integer> posFreq;
@@ -11,14 +13,16 @@ public class Statistics {
 		posFreq = new HashMap<>();
 	}
 
-	public void addWord(String[] row) {
-		int count = wordFreq.containsKey(row[2]) ? wordFreq.get(row[2]) : 0;
-		wordFreq.put(row[2], count + 1);
+	public void addWord(Word w) {
+		String lemma = w.getLemma();
+		int count = wordFreq.containsKey(lemma) ? wordFreq.get(lemma) : 0;
+		wordFreq.put(lemma, count + 1);
 	}
 
-	public void addPos(String[] row) {
-		int count = posFreq.containsKey(row[4]) ? posFreq.get(row[4]) : 0;
-		posFreq.put(row[4], count + 1);
+	public void addPos(Word w) {
+		String pos = w.getPos();
+		int count = posFreq.containsKey(pos) ? posFreq.get(pos) : 0;
+		posFreq.put(pos, count + 1);
 	}
 
 	public String getWordFreqList() {

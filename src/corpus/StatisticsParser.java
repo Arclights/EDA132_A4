@@ -1,36 +1,35 @@
 package corpus;
 
-import java.io.BufferedReader;
+import static data.CorpusFileReader.createCorpus;
+
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import data.Corpus;
+import data.Word;
+
 public class StatisticsParser {
 
-	private static void parse(String filePath) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(
-				new File(filePath)));
+	private static void parse(Corpus corp) throws IOException {
 		Statistics stat = new Statistics();
-		String line;
-		while ((line = br.readLine()) != null) {
-			String[] row = line.split("\\s");
-			if (row.length > 1) {
-				stat.addWord(row);
-				stat.addPos(row);
-			}
-		}
-		br.close();
 
+		for (Word w : corp) {
+			stat.addPos(w);
+			stat.addWord(w);
+		}
+		System.out.println("Statistics built...");
 		PrintWriter pw = new PrintWriter(new File("word_freq.txt"));
 		pw.print(stat.getWordFreqList());
 		pw.close();
 		pw = new PrintWriter(new File("pos_freq.txt"));
 		pw.print(stat.getPosFreqList());
 		pw.close();
+		System.out.println("Files stored!");
 	}
 
 	public static void main(String[] args) throws IOException {
-		parse("data/english_corpus/CoNLL2009-ST-English-train-pos.txt");
+		Corpus corp = createCorpus(data.Constants.CORPUS_TRAIN);
+		parse(corp);
 	}
 }
