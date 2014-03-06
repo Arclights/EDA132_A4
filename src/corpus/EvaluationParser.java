@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class EvaluationParser {
 
-	private static void eval(String filePath) throws IOException {
+	public static Evaluation eval(String filePath) throws IOException {
 
 		Evaluation evaluation = new Evaluation();
 		BufferedReader br = new BufferedReader(new FileReader(
@@ -21,13 +21,16 @@ public class EvaluationParser {
 		}
 		br.close();
 
+		return evaluation;
+
+	}
+
+	public static void main(String[] args) throws IOException {
+		Evaluation evaluation = eval("data/english_corpus/CoNLL2009-ST-English-development-pos.txt");
+
 		evaluation.printAccuracy();
 		System.out.println();
 		evaluation.printConfusionTable();
 		evaluation.printConfusionTableLatex();
-	}
-
-	public static void main(String[] args) throws IOException {
-		eval("CoNLL2009-corpus.txt");
 	}
 }

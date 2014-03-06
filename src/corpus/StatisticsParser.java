@@ -31,6 +31,6 @@ public class StatisticsParser {
 	}
 
 	public static void main(String[] args) throws IOException {
-		parse("CoNLL2009-corpus.txt");
+		parse("data/english_corpus/CoNLL2009-ST-English-train-pos.txt");
 	}
 }
