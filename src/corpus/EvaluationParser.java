@@ -26,7 +26,7 @@ public class EvaluationParser {
 	}
 
 	public static void main(String[] args) throws IOException {
-		Evaluation evaluation = eval("data/english_corpus/CoNLL2009-ST-English-development-pos.txt");
+		Evaluation evaluation = eval("data/tagged");
 
 		evaluation.printAccuracy();
 		System.out.println();

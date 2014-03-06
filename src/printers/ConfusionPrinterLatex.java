@@ -24,7 +24,9 @@ public class ConfusionPrinterLatex {
 			HashMap<String, Integer> row = confTable.get(s);
 			int[] freqs = new int[columns.size()];
 			for (String s2 : row.keySet()) {
-				freqs[columns.get(s2)] = row.get(s2);
+				if (columns.containsKey(s2)) {
+					freqs[columns.get(s2)] = row.get(s2);
+				}
 			}
 			printRow(s, freqs);
 		}

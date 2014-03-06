@@ -11,7 +11,25 @@ public class Word {
 	}
 
 	public int hashCode() {
-		return lemma.hashCode();
+		return (lemma + "\n" + pos).hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Word) 
+			return ((Word) obj).hashCode() == hashCode();
+		return false;
 	}
 
+	public String toString() {
+		return "[ " + lemma + ", " + pos + "]";
+	}
+
+	public String getLemma() {
+		return lemma;
+	}
+
+	public String getPos() {
+		return pos;
+	}
 }

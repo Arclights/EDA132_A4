@@ -32,15 +32,20 @@ public class ConfusionPrinterDefault {
 			System.out.print(columnTitle);
 		}
 		System.out.println();
-		System.out.println("Columns: "+columnCounter);
+		System.out.println("Columns: " + columnCounter);
 		String divider = repeatString("-", rowLength);
 		System.out.println(divider);
 
 		for (String s : confTable.keySet()) {
 			HashMap<String, Integer> row = confTable.get(s);
+			if (row == null) {
+				System.out.println("oj då!");
+			}
 			int[] freqs = new int[columnCounter];
 			for (String s2 : row.keySet()) {
-				freqs[columns.get(s2)] = row.get(s2);
+				if (columns.containsKey(s2)) {
+					freqs[columns.get(s2)] = row.get(s2);
+				}
 			}
 			printRow(s, freqs, columnWidth, divider);
 		}
