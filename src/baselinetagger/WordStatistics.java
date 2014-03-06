@@ -1,7 +1,8 @@
 package baselinetagger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+
+import data.Word;
 
 public class WordStatistics {
 
