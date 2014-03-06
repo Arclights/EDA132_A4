@@ -49,6 +49,10 @@ public class Word {
 		this.ppos = ppos;
 	}
 
+	public boolean isEOS() {
+		return lemma.equals("<EOS>");
+	}
+
 	public String getPpos() {
 		return ppos;
 	}

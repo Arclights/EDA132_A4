@@ -52,6 +52,10 @@ public class Corpus implements Iterable<Word> {
 	public Iterator<Word> iterator() {
 		return new CorpusIterator();
 	}
+	
+	public Iterator<Word> getCompleteIterator(){
+		return new CompleteCorpusIterator();
+	}
 
 	private class CorpusIterator implements Iterator<Word> {
 
@@ -92,5 +96,36 @@ public class Corpus implements Iterable<Word> {
 		String s = "Corpus consists of: \n\t" + sentences.size()
 				+ " sentences\n\t" + words + " words";
 		return s;
+	}
+	
+	private class CompleteCorpusIterator implements Iterator<Word> {
+
+		int sentence = 0;
+		int word = 0;
+
+		@Override
+		public boolean hasNext() {
+			if (sentence == sentences.size())
+				return false;
+			return true;
+		}
+
+		@Override
+		public Word next() {
+			Word w = sentences.get(sentence).get(word);
+			word++;
+			if (sentences.get(sentence).size() == word) {
+				word = 0;
+				sentence++;
+			}
+			return w;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+
+		}
+
 	}
 }
