@@ -1,6 +1,7 @@
 package data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -46,7 +47,7 @@ public class Corpus implements Iterable<Word> {
 	}
 
 	private HashMap<PosBigram, Double> getPosBigramsProbabilities() {
-		
+
 		Bigrams<PosBigram> b = new Bigrams<>();
 		for (ArrayList<Word> sentence : sentences) {
 			for (int i = 1; i < sentence.size(); i++) {
@@ -168,36 +169,119 @@ public class Corpus implements Iterable<Word> {
 	public void tag(ArrayList<String> list) {
 		ArrayList<Word> output = new ArrayList<>();
 
-		Word prev = null;
+		ArrayList<HashMap<String, Double>> table = new ArrayList<>();
+
+		// Fill table
 		for (String lemma : list) {
 			HashMap<String, Double> wordProb = getWordProb(lemma);
 			Word w;
-			if (wordProb.size() == 1) {
-				String ppos = wordProb.keySet().iterator().next();
-				w = new Word("?", "?", lemma, "?", "?", ppos);
-			} else {
+
+			// if (wordProb.size() == 1) {
+			// String ppos = wordProb.keySet().iterator().next();
+			// // w = new Word("?", "?", lemma, "?", "?", ppos);
+			// } else {
+			if (!lemma.equals("<BOS>")) {
+				HashMap<String, Double> prevProbs = table.get(table.size() - 1);
+
 				for (String pos : wordProb.keySet()) {
-					PosBigram b = new PosBigram(new Word(pos), prev);
-					double d = posProb.containsKey(b) ? posProb.get(b) : 0;
-					double current = wordProb.get(pos);
-					wordProb.put(pos, d * current);
-				}
-				String ppos = "";
-				double prob = -1.0;
-				for (String pos : wordProb.keySet()) {
-					if (wordProb.get(pos) > prob) {
-						prob = wordProb.get(pos);
-						ppos = pos;
+					double prob = wordProb.get(pos);
+					double bestCombProb = -1;
+					for (String prevPos : prevProbs.keySet()) {
+						PosBigram b = new PosBigram(new Word(pos), new Word(
+								prevPos));
+
+						double d = posProb.containsKey(b) ? posProb.get(b) : 0;
+						double prevProb = prevProbs.get(prevPos);
+						double combProb = d * prevProb;
+						if (combProb > bestCombProb) {
+							bestCombProb = combProb;
+						}
 					}
+					wordProb.put(pos, bestCombProb /** * P(lemma|pos) **/);
 				}
-				w = new Word("?", "?", lemma, "?", "?", ppos);
 			}
-			output.add(w);
-			prev = w;
+			// output.add(w);
+			table.add(wordProb);
 		}
-		for (Word w: output)
+
+		// Backtrack
+		for (int i = 0; i < table.size(); i++) {
+			HashMap<String, Double> column = table.get(i);
+			String lemma = list.get(i);
+			double maxProb = -1;
+			String ppos = "";
+			for (String pos : column.keySet()) {
+				if (column.get(pos) > maxProb) {
+					maxProb = column.get(pos);
+					ppos = pos;
+				}
+			}
+			output.add(new Word("?", "?", lemma, "?", "?", ppos));
+		}
+
+		// Word prev = null;
+		// for (String lemma : list) {
+		// HashMap<String, Double> wordProb = getWordProb(lemma);
+		// Word w;
+		//
+		// if (wordProb.size() == 1) {
+		// String ppos = wordProb.keySet().iterator().next();
+		// w = new Word("?", "?", lemma, "?", "?", ppos);
+		// } else {
+		//
+		// for (String pos : wordProb.keySet()) {
+		// System.out.println(pos);
+		// PosBigram b = new PosBigram(new Word(pos), prev);
+		//
+		// double d = posProb.containsKey(b) ? posProb.get(b) : 0;
+		// double current = wordProb.get(pos);
+		// wordProb.put(pos, d * current);
+		// }
+		// String ppos = "";
+		// double prob = -1.0;
+		// for (String pos : wordProb.keySet()) {
+		// if (wordProb.get(pos) > prob) {
+		// prob = wordProb.get(pos);
+		// ppos = pos;
+		// }
+		// }
+		// w = new Word("?", "?", lemma, "?", "?", ppos);
+		// }
+		// output.add(w);
+		// prev = w;
+		// }
+		for (Word w : output)
 			System.out.println(w);
 	}
+
+	// public void tag(ArrayList<String> list) {
+	// ArrayList<Word> out = tag(list, 0, new ArrayList<Word>());
+	//
+	// }
+	//
+	// private ArrayList<Word> tag(ArrayList<String> list, int wordPos,
+	// ArrayList<Word> words) {
+	// ArrayList<Word> out = new ArrayList<>();
+	// out.addAll(words);
+	//
+	// String lemma = list.get(wordPos);
+	// HashMap<String, Double> wordProb = getWordProb(lemma);
+	// Word w;
+	// if (wordProb.size() == 1) {
+	// String ppos = wordProb.keySet().iterator().next();
+	// w = new Word("?", "?", lemma, "?", "?", ppos);
+	// return tag(list, wordPos + 1, words);
+	// } else {
+	// Word prev = words.get(wordPos - 1);
+	// for (String pos : wordProb.keySet()) {
+	// PosBigram b = new PosBigram(new Word(pos), prev);
+	// double d = posProb.containsKey(b) ? posProb.get(b) : 0;
+	// double current = wordProb.get(pos);
+	// wordProb.put(pos, d * current);
+	// }
+	// }
+	// return out;
+	// }
 
 	private HashMap<String, Double> getWordProb(String lemma) {
 		HashMap<String, Double> data = new HashMap<>();
