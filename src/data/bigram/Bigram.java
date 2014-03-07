@@ -2,23 +2,24 @@ package data.bigram;
 
 
 public abstract class Bigram {
-	String a;
-	String b;
+	 String prob;
+	 String given;
 
-	public Bigram(String a, String b) {
-		this.a = a;
-		this.b = b;
+	public Bigram(String prob, String given) {
+		this.prob = prob;
+		this.given = given;
 	}
 
 	@Override
 	public String toString() {
-		return "(" + a + "|" + b + ")";
+		return "(" + prob + "|" + given + ")";
 	}
 
 	public int hashCode() {
-		return (a + "\n" + b).hashCode();
+		return (prob + "\n" + given).hashCode();
 	}
 
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Bigram) 

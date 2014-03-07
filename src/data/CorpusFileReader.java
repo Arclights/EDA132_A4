@@ -19,13 +19,20 @@ public class CorpusFileReader {
 	}
 
 	public static Corpus createCorpus(String filePath) throws IOException {
+		System.out.printf("Creating corups from '%s'\n",filePath);
 		Corpus corpus = new Corpus();
 		int sentence = 0;
-		
+		boolean print = false;
 		BufferedReader br = new BufferedReader(new FileReader(
 				new File(filePath)));
 		String line;
 		while ((line = br.readLine()) != null) {
+			if (sentence % 10000 == 0 && print) {
+				System.out.printf("Read %d sentences\n",sentence);
+				print = false;
+			} else if (sentence % 10000 == 1) {
+				print = true;
+			}
 			String[] row = line.split("\\s");
 			if (row.length > 1) {
 				corpus.addWord(sentence, row);
@@ -34,7 +41,10 @@ public class CorpusFileReader {
 			}
 		}
 		br.close();
-		
+		System.out.println("All sentences loaded!");
+		System.out.println("Calculating bigrams...");
+		corpus.calculateBigrams();
+		System.out.println("Bigrams calculated!");
 		System.out.println(corpus.statistics());
 		return corpus;
 				

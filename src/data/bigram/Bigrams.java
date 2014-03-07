@@ -2,26 +2,28 @@ package data.bigram;
 
 import java.util.HashMap;
 
-public class Bigrams {
+public class Bigrams<E extends Bigram> {
 
-	HashMap<Bigram, Integer> bigrams;
-	double totalBigrams;
+	HashMap<E, Integer> bigrams;
+	HashMap<String, Integer> n;
 
 	public Bigrams() {
 		bigrams = new HashMap<>();
-		totalBigrams = 0;
+		n = new HashMap<>();
 	}
 
-	public void addBigram(Bigram bigram) {
+	public void addBigram(E bigram) {
 		int count = bigrams.containsKey(bigram) ? bigrams.get(bigram) : 0;
 		bigrams.put(bigram, count + 1);
-		totalBigrams++;
+
+		count = n.containsKey(bigram.given) ? n.get(bigram.given) : 0;
+		n.put(bigram.given, count + 1);
 	}
 
-	public HashMap<Bigram, Double> getProbabilities() {
-		HashMap<Bigram, Double> out = new HashMap<>();
-		for (Bigram b : bigrams.keySet()) {
-			out.put(b, bigrams.get(b) / totalBigrams);
+	public HashMap<E, Double> getProbabilities() {
+		HashMap<E, Double> out = new HashMap<>();
+		for (E b : bigrams.keySet()) {
+			out.put(b, bigrams.get(b) / (double)n.get(b.given));
 		}
 		return out;
 	}

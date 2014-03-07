@@ -1,16 +1,18 @@
 package data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
-import data.bigram.Bigram;
 import data.bigram.Bigrams;
 import data.bigram.PosBigram;
 import data.bigram.WordBigram;
 
 public class Corpus implements Iterable<Word> {
 
-	ArrayList<ArrayList<Word>> sentences;
+	private ArrayList<ArrayList<Word>> sentences;
+	private HashMap<PosBigram, Double> posProb;
+	private HashMap<WordBigram, Double> wordProb;
 
 	public Corpus() {
 		sentences = new ArrayList<>();
@@ -37,27 +39,34 @@ public class Corpus implements Iterable<Word> {
 		ArrayList<Word> givenSentence = sentences.get(sentence);
 		givenSentence.add(givenSentence.size() - 1, w);
 	}
-	
-	public Bigrams getPosBigrams() {
-		Bigrams b = new Bigrams();
+
+	void calculateBigrams() {
+		posProb = getPosBigramsProbabilities();
+		wordProb = getWordBigramsProbabilities();
+	}
+
+	private HashMap<PosBigram, Double> getPosBigramsProbabilities() {
+		
+		Bigrams<PosBigram> b = new Bigrams<>();
 		for (ArrayList<Word> sentence : sentences) {
 			for (int i = 1; i < sentence.size(); i++) {
-				Bigram bigram = new PosBigram(sentence.get(i), sentence.get(i-1));
+				PosBigram bigram = new PosBigram(sentence.get(i),
+						sentence.get(i - 1));
 				b.addBigram(bigram);
 			}
 		}
-		return b;
+		return b.getProbabilities();
 	}
-	
-	public Bigrams getWordBigrams() {
-		Bigrams b = new Bigrams();
+
+	private HashMap<WordBigram, Double> getWordBigramsProbabilities() {
+		Bigrams<WordBigram> b = new Bigrams<>();
 		for (ArrayList<Word> sentence : sentences) {
 			for (int i = 0; i < sentence.size(); i++) {
-				Bigram bigram = new WordBigram(sentence.get(i));
+				WordBigram bigram = new WordBigram(sentence.get(i));
 				b.addBigram(bigram);
 			}
 		}
-		return b;
+		return b.getProbabilities();
 	}
 
 	@Override
@@ -79,8 +88,8 @@ public class Corpus implements Iterable<Word> {
 	public Iterator<Word> iterator() {
 		return new CorpusIterator();
 	}
-	
-	public Iterator<Word> getCompleteIterator(){
+
+	public Iterator<Word> getCompleteIterator() {
 		return new CompleteCorpusIterator();
 	}
 
@@ -124,7 +133,7 @@ public class Corpus implements Iterable<Word> {
 				+ " sentences\n\t" + words + " words";
 		return s;
 	}
-	
+
 	private class CompleteCorpusIterator implements Iterator<Word> {
 
 		int sentence = 0;
@@ -154,5 +163,49 @@ public class Corpus implements Iterable<Word> {
 
 		}
 
+	}
+
+	public void tag(ArrayList<String> list) {
+		ArrayList<Word> output = new ArrayList<>();
+
+		Word prev = null;
+		for (String lemma : list) {
+			HashMap<String, Double> wordProb = getWordProb(lemma);
+			Word w;
+			if (wordProb.size() == 1) {
+				String ppos = wordProb.keySet().iterator().next();
+				w = new Word("?", "?", lemma, "?", "?", ppos);
+			} else {
+				for (String pos : wordProb.keySet()) {
+					PosBigram b = new PosBigram(new Word(pos), prev);
+					double d = posProb.containsKey(b) ? posProb.get(b) : 0;
+					double current = wordProb.get(pos);
+					wordProb.put(pos, d * current);
+				}
+				String ppos = "";
+				double prob = -1.0;
+				for (String pos : wordProb.keySet()) {
+					if (wordProb.get(pos) > prob) {
+						prob = wordProb.get(pos);
+						ppos = pos;
+					}
+				}
+				w = new Word("?", "?", lemma, "?", "?", ppos);
+			}
+			output.add(w);
+			prev = w;
+		}
+		for (Word w: output)
+			System.out.println(w);
+	}
+
+	private HashMap<String, Double> getWordProb(String lemma) {
+		HashMap<String, Double> data = new HashMap<>();
+		for (WordBigram wb : wordProb.keySet()) {
+			if (wb.getLemma().equals(lemma)) {
+				data.put(wb.getPos(), wordProb.get(wb));
+			}
+		}
+		return data;
 	}
 }
