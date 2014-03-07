@@ -3,6 +3,11 @@ package data;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import data.bigram.Bigram;
+import data.bigram.Bigrams;
+import data.bigram.PosBigram;
+import data.bigram.WordBigram;
+
 public class Corpus implements Iterable<Word> {
 
 	ArrayList<ArrayList<Word>> sentences;
@@ -31,6 +36,28 @@ public class Corpus implements Iterable<Word> {
 		Word w = new Word(id, form, lemma, plemma, pos, ppos);
 		ArrayList<Word> givenSentence = sentences.get(sentence);
 		givenSentence.add(givenSentence.size() - 1, w);
+	}
+	
+	public Bigrams getPosBigrams() {
+		Bigrams b = new Bigrams();
+		for (ArrayList<Word> sentence : sentences) {
+			for (int i = 1; i < sentence.size(); i++) {
+				Bigram bigram = new PosBigram(sentence.get(i), sentence.get(i-1));
+				b.addBigram(bigram);
+			}
+		}
+		return b;
+	}
+	
+	public Bigrams getWordBigrams() {
+		Bigrams b = new Bigrams();
+		for (ArrayList<Word> sentence : sentences) {
+			for (int i = 0; i < sentence.size(); i++) {
+				Bigram bigram = new WordBigram(sentence.get(i));
+				b.addBigram(bigram);
+			}
+		}
+		return b;
 	}
 
 	@Override

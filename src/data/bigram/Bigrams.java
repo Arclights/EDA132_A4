@@ -1,4 +1,4 @@
-package postagger;
+package data.bigram;
 
 import java.util.HashMap;
 
