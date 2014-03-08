@@ -1,5 +1,7 @@
 package data;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,7 +14,7 @@ import data.bigram.WordBigram;
 public class Corpus implements Iterable<Word> {
 
 	private ArrayList<ArrayList<Word>> sentences;
-	private HashMap<PosBigram, Double> posProb;
+	private HashMap<PosBigram, Double> posProbs;
 	private HashMap<WordBigram, Double> wordProb;
 
 	public Corpus() {
@@ -41,9 +43,13 @@ public class Corpus implements Iterable<Word> {
 		givenSentence.add(givenSentence.size() - 1, w);
 	}
 
-	void calculateBigrams() {
-		posProb = getPosBigramsProbabilities();
+	void calculateBigrams() throws FileNotFoundException {
+		posProbs = getPosBigramsProbabilities();
 		wordProb = getWordBigramsProbabilities();
+
+		PrintWriter pw = new PrintWriter("posProbs.txt");
+		pw.print(posProbs.toString());
+		pw.close();
 	}
 
 	private HashMap<PosBigram, Double> getPosBigramsProbabilities() {
@@ -171,37 +177,34 @@ public class Corpus implements Iterable<Word> {
 
 		ArrayList<HashMap<String, Double>> table = new ArrayList<>();
 
-		// Fill table
 		for (String lemma : list) {
-			HashMap<String, Double> wordProb = getWordProb(lemma);
-			Word w;
+			HashMap<String, Double> wordProbs = getWordProbs(lemma);
 
-			// if (wordProb.size() == 1) {
-			// String ppos = wordProb.keySet().iterator().next();
-			// // w = new Word("?", "?", lemma, "?", "?", ppos);
-			// } else {
 			if (!lemma.equals("<BOS>")) {
 				HashMap<String, Double> prevProbs = table.get(table.size() - 1);
 
-				for (String pos : wordProb.keySet()) {
-					double prob = wordProb.get(pos);
+				for (String pos : wordProbs.keySet()) {
 					double bestCombProb = -1;
-					for (String prevPos : prevProbs.keySet()) {
-						PosBigram b = new PosBigram(new Word(pos), new Word(
-								prevPos));
 
-						double d = posProb.containsKey(b) ? posProb.get(b) : 0;
+					for (String prevPos : prevProbs.keySet()) {
+						PosBigram currBigram = new PosBigram(new Word(pos),
+								new Word(prevPos));
+						double posProb = 0;
+						if (posProbs.containsKey(currBigram)) {
+							posProb = posProbs.get(currBigram);
+						}
+
 						double prevProb = prevProbs.get(prevPos);
-						double combProb = d * prevProb;
+						double combProb = posProb * prevProb;
+
 						if (combProb > bestCombProb) {
 							bestCombProb = combProb;
 						}
 					}
-					wordProb.put(pos, bestCombProb /** * P(lemma|pos) **/);
+					wordProbs.put(pos, bestCombProb * wordProbs.get(pos));
 				}
 			}
-			// output.add(w);
-			table.add(wordProb);
+			table.add(wordProbs);
 		}
 
 		// Backtrack
@@ -219,71 +222,18 @@ public class Corpus implements Iterable<Word> {
 			output.add(new Word("?", "?", lemma, "?", "?", ppos));
 		}
 
-		// Word prev = null;
-		// for (String lemma : list) {
-		// HashMap<String, Double> wordProb = getWordProb(lemma);
-		// Word w;
-		//
-		// if (wordProb.size() == 1) {
-		// String ppos = wordProb.keySet().iterator().next();
-		// w = new Word("?", "?", lemma, "?", "?", ppos);
-		// } else {
-		//
-		// for (String pos : wordProb.keySet()) {
-		// System.out.println(pos);
-		// PosBigram b = new PosBigram(new Word(pos), prev);
-		//
-		// double d = posProb.containsKey(b) ? posProb.get(b) : 0;
-		// double current = wordProb.get(pos);
-		// wordProb.put(pos, d * current);
-		// }
-		// String ppos = "";
-		// double prob = -1.0;
-		// for (String pos : wordProb.keySet()) {
-		// if (wordProb.get(pos) > prob) {
-		// prob = wordProb.get(pos);
-		// ppos = pos;
-		// }
-		// }
-		// w = new Word("?", "?", lemma, "?", "?", ppos);
-		// }
-		// output.add(w);
-		// prev = w;
-		// }
 		for (Word w : output)
 			System.out.println(w);
 	}
 
-	// public void tag(ArrayList<String> list) {
-	// ArrayList<Word> out = tag(list, 0, new ArrayList<Word>());
-	//
-	// }
-	//
-	// private ArrayList<Word> tag(ArrayList<String> list, int wordPos,
-	// ArrayList<Word> words) {
-	// ArrayList<Word> out = new ArrayList<>();
-	// out.addAll(words);
-	//
-	// String lemma = list.get(wordPos);
-	// HashMap<String, Double> wordProb = getWordProb(lemma);
-	// Word w;
-	// if (wordProb.size() == 1) {
-	// String ppos = wordProb.keySet().iterator().next();
-	// w = new Word("?", "?", lemma, "?", "?", ppos);
-	// return tag(list, wordPos + 1, words);
-	// } else {
-	// Word prev = words.get(wordPos - 1);
-	// for (String pos : wordProb.keySet()) {
-	// PosBigram b = new PosBigram(new Word(pos), prev);
-	// double d = posProb.containsKey(b) ? posProb.get(b) : 0;
-	// double current = wordProb.get(pos);
-	// wordProb.put(pos, d * current);
-	// }
-	// }
-	// return out;
-	// }
-
-	private HashMap<String, Double> getWordProb(String lemma) {
+	/**
+	 * Gets each POS the lemma can have and returns the probabilities of the
+	 * lemma being that POS mapped to the respective POS
+	 * 
+	 * @param lemma
+	 * @return
+	 */
+	private HashMap<String, Double> getWordProbs(String lemma) {
 		HashMap<String, Double> data = new HashMap<>();
 		for (WordBigram wb : wordProb.keySet()) {
 			if (wb.getLemma().equals(lemma)) {
@@ -292,4 +242,11 @@ public class Corpus implements Iterable<Word> {
 		}
 		return data;
 	}
+
+	private void printTable(ArrayList<HashMap<String, Double>> table) {
+		for (int i = 0; i < table.size(); i++) {
+			System.out.println("Column " + i + ": " + table.get(i));
+		}
+	}
+
 }

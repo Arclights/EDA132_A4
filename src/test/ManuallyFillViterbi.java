@@ -12,7 +12,9 @@ public class ManuallyFillViterbi {
 		Corpus c = CorpusFileReader.createCorpus(data.Constants.CORPUS_TRAIN);
 
 		ArrayList<String> list = new ArrayList<>();
-		for (String s : ("<BOS> the round table might collapse <EOS>").split("\\s")) {
+		for (String s : ("<BOS> "
+				+ "That round table might collapse".toLowerCase() + " <EOS>")
+				.split("\\s")) {
 			list.add(s);
 		}
 		c.tag(list);
