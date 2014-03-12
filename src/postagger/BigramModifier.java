@@ -1,6 +1,6 @@
 package postagger;
 
-import static data.Constants.CORPUS_DEVELOPMENT;
+import static data.Constants.*;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -34,7 +34,7 @@ public class BigramModifier {
 	}
 
 	public static void main(String[] args) throws IOException {
-		Corpus corp = CorpusFileReader.createCorpus(CORPUS_DEVELOPMENT);
+		Corpus corp = CorpusFileReader.createCorpus(CORPUS_TRAIN);
 		Bigrams bigrams = extractBigrams(corp);
 		System.out.println(bigrams);
 		System.out.println(bigrams.getProbabilities());
