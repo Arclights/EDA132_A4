@@ -13,6 +13,6 @@ public class Tagger {
 	}
 
 	public String assignPos(Word w) {
-		return ws.get(w.getLemma());
+		return ws.get(w.getForm());
 	}
 }

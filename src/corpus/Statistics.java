@@ -14,7 +14,7 @@ public class Statistics {
 	}
 
 	public void addWord(Word w) {
-		String lemma = w.getLemma();
+		String lemma = w.getForm();
 		int count = wordFreq.containsKey(lemma) ? wordFreq.get(lemma) : 0;
 		wordFreq.put(lemma, count + 1);
 	}

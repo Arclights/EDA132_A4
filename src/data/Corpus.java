@@ -92,7 +92,6 @@ public class Corpus implements Iterable<Word> {
 		return new CorpusIterator();
 	}
 
-
 	private class CorpusIterator implements Iterator<Word> {
 
 		int sentence = 0;
@@ -139,10 +138,10 @@ public class Corpus implements Iterable<Word> {
 
 		ArrayList<HashMap<String, Double>> table = new ArrayList<>();
 
-		for (String lemma : list) {
-			HashMap<String, Double> wordProbs = getWordProbs(lemma);
+		for (String form : list) {
+			HashMap<String, Double> wordProbs = getWordProbs(form);
 
-			if (!lemma.equals("<BOS>")) {
+			if (!form.equals("<BOS>")) {
 				HashMap<String, Double> prevProbs = table.get(table.size() - 1);
 
 				for (String pos : wordProbs.keySet()) {
@@ -152,9 +151,9 @@ public class Corpus implements Iterable<Word> {
 						PosBigram currBigram = new PosBigram(new Word(pos),
 								new Word(prevPos));
 						double posProb = 0;
-						if (posProbs.containsKey(currBigram)) {
+//						if (posProbs.containsKey(currBigram)) {
 							posProb = posProbs.get(currBigram);
-						}
+//						}
 
 						double prevProb = prevProbs.get(prevPos);
 						double combProb = posProb * prevProb;
@@ -172,7 +171,7 @@ public class Corpus implements Iterable<Word> {
 		// Backtrack
 		for (int i = 0; i < table.size(); i++) {
 			HashMap<String, Double> column = table.get(i);
-			String lemma = list.get(i);
+			String form = list.get(i);
 			double maxProb = -1;
 			String ppos = "";
 			for (String pos : column.keySet()) {
@@ -181,7 +180,7 @@ public class Corpus implements Iterable<Word> {
 					ppos = pos;
 				}
 			}
-			output.add(new Word("?", "?", lemma, "?", "?", ppos));
+			output.add(new Word("?", form, "?", "?", "?", ppos));
 		}
 
 		for (Word w : output)
