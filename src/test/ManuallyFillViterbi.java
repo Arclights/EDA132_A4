@@ -11,7 +11,9 @@ public class ManuallyFillViterbi {
 		Corpus c = CorpusFileReader.createCorpus(data.Constants.CORPUS_TRAIN);
 
 		ArrayList<String> list = new ArrayList<>();
-		for (String s : ("That round table might collapse".toLowerCase())
+		// String sentence="That round table might collapse";
+		String sentence = "So much for anticipating the market by a fraction of a second .";
+		for (String s : ("<BOS> " + sentence.toLowerCase() + " <EOS>")
 				.split("\\s")) {
 			list.add(s);
 		}

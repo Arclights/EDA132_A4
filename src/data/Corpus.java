@@ -130,13 +130,15 @@ public class Corpus implements Iterable<Word> {
 		ArrayList<Word> output = new ArrayList<>();
 
 		ArrayList<HashMap<String, Double>> table = new ArrayList<>();
+		HashMap<String, Double> bosCol = new HashMap<>();
+		bosCol.put("<BOS>", 1.0);
+		table.add(bosCol);
 
 		for (String form : list) {
 			HashMap<String, Double> wordProbs = getWordProbs(form);
 
 			if (!form.equals("<BOS>")) {
 				HashMap<String, Double> prevProbs = table.get(table.size() - 1);
-
 				for (String pos : wordProbs.keySet()) {
 					double bestCombProb = -1;
 
@@ -157,8 +159,9 @@ public class Corpus implements Iterable<Word> {
 					}
 					wordProbs.put(pos, bestCombProb * wordProbs.get(pos));
 				}
+				table.add(wordProbs);
 			}
-			table.add(wordProbs);
+
 		}
 
 		// Backtrack
