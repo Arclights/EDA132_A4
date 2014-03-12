@@ -151,9 +151,9 @@ public class Corpus implements Iterable<Word> {
 						PosBigram currBigram = new PosBigram(new Word(pos),
 								new Word(prevPos));
 						double posProb = 0;
-//						if (posProbs.containsKey(currBigram)) {
+						if (posProbs.containsKey(currBigram)) {
 							posProb = posProbs.get(currBigram);
-//						}
+						}
 
 						double prevProb = prevProbs.get(prevPos);
 						double combProb = posProb * prevProb;
