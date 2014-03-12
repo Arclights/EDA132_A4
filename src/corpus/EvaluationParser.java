@@ -1,6 +1,6 @@
 package corpus;
 
-import static data.Constants.CORPUS_DEVELOPMENT;
+import static data.Constants.*;
 
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ public class EvaluationParser {
 	}
 
 	public static void main(String[] args) throws IOException {
-		Corpus corp = CorpusFileReader.createCorpus(CORPUS_DEVELOPMENT);
+		Corpus corp = CorpusFileReader.createCorpus(TAGGED_DATA);
 		Evaluation evaluation = eval(corp);
 
 		evaluation.printAccuracy();

@@ -16,7 +16,7 @@ public class ManuallyFillViterbi {
 				.createCorpus(data.Constants.CORPUS_DEVELOPMENT);
 
 		trainCorpus.tag(develCorpus);
-		develCorpus.printToFile("ViterbiTest.txt");
+		develCorpus.printToFile(data.Constants.TAGGED_DATA);
 
 		// Sentence sentence = new Sentence();
 		// int i = 1;

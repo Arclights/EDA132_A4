@@ -3,6 +3,7 @@ package data;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -26,6 +27,7 @@ public class Corpus implements Iterable<Word> {
 			Sentence list = new Sentence();
 			sentences.add(list);
 		}
+		try {
 		String id = row[0];
 		String form = row[1];
 		String lemma = row[2];
@@ -35,6 +37,10 @@ public class Corpus implements Iterable<Word> {
 		Word w = new Word(id, form, lemma, plemma, pos, ppos);
 		ArrayList<Word> givenSentence = sentences.get(sentence);
 		givenSentence.add(w);
+		} catch (Exception e) {
+			System.out.println(Arrays.toString(row));
+			throw e;
+		}
 	}
 
 	void calculateBigrams() throws FileNotFoundException {
@@ -132,11 +138,14 @@ public class Corpus implements Iterable<Word> {
 			int curr = (100 * i) / size;
 			if (curr > proc) {
 				proc = curr;
-				System.out.printf("%d%% ", curr);
+				System.out.printf("%3d%%\t",	curr);
+				if (curr % 10 == 0)
+					System.out.println();
 			}
 			Sentence sentence = corpus.sentences.get(i);
 			tag(sentence);
 		}
+		System.out.printf("100%%\t");
 	}
 
 	public void tag(Sentence sentence) {
@@ -193,7 +202,7 @@ public class Corpus implements Iterable<Word> {
 		for (int i = 1; i < table.size(); i++) {
 			HashMap<String, Double> column = table.get(i);
 			double maxProb = -1;
-			String ppos = "";
+			String ppos = "-";
 			for (String pos : column.keySet()) {
 				if (column.get(pos) > maxProb) {
 					maxProb = column.get(pos);
