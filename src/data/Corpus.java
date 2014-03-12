@@ -205,6 +205,16 @@ public class Corpus implements Iterable<Word> {
 		return data;
 	}
 
+	public void recursiveTag(ArrayList<String> list) {
+		
+		
+		
+	}
+	
+	private double recursiveTag(ArrayList<Word> words, ArrayList<String> list, double best) {
+		return 0;
+	}
+	
 	private void printTable(ArrayList<HashMap<String, Double>> table) {
 		for (int i = 0; i < table.size(); i++) {
 			System.out.println("Column " + i + ": " + table.get(i));
