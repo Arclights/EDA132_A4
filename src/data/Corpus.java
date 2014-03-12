@@ -1,9 +1,7 @@
 package data;
 
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -13,23 +11,18 @@ import data.bigram.WordBigram;
 
 public class Corpus implements Iterable<Word> {
 
-	private ArrayList<ArrayList<Word>> sentences;
+	private ArrayList<Sentence> sentences;
 	private HashMap<PosBigram, Double> posProbs;
 	private HashMap<WordBigram, Double> wordProb;
 
 	public Corpus() {
 		sentences = new ArrayList<>();
-		sentences.add(new ArrayList<Word>());
-		sentences.get(0).add(new Word("<BOS>"));
-		sentences.get(0).add(new Word("<EOS>"));
-
+		sentences.add(new Sentence());
 	}
 
 	void addWord(int sentence, String[] row) {
 		if (sentence == sentences.size()) {
-			ArrayList<Word> list = new ArrayList<Word>();
-			list.add(new Word("<BOS>"));
-			list.add(new Word("<EOS>"));
+			Sentence list = new Sentence();
 			sentences.add(list);
 		}
 		String id = row[0];
@@ -40,7 +33,7 @@ public class Corpus implements Iterable<Word> {
 		String ppos = row[5];
 		Word w = new Word(id, form, lemma, plemma, pos, ppos);
 		ArrayList<Word> givenSentence = sentences.get(sentence);
-		givenSentence.add(givenSentence.size() - 1, w);
+		givenSentence.add(w);
 	}
 
 	void calculateBigrams() throws FileNotFoundException {
@@ -207,6 +200,7 @@ public class Corpus implements Iterable<Word> {
 		return data;
 	}
 
+	
 	private void printTable(ArrayList<HashMap<String, Double>> table) {
 		for (int i = 0; i < table.size(); i++) {
 			System.out.println("Column " + i + ": " + table.get(i));

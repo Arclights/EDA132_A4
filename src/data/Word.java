@@ -67,4 +67,5 @@ public class Word {
 			return ((Word) obj).hashCode() == hashCode();
 		return false;
 	}
+	
 }
