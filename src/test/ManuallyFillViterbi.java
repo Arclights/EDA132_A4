@@ -1,12 +1,9 @@
 package test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import data.Corpus;
 import data.CorpusFileReader;
-import data.Sentence;
-import data.Word;
 
 public class ManuallyFillViterbi {
 	public static void main(String[] args) throws IOException {

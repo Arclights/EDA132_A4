@@ -28,15 +28,15 @@ public class Corpus implements Iterable<Word> {
 			sentences.add(list);
 		}
 		try {
-		String id = row[0];
-		String form = row[1];
-		String lemma = row[2];
-		String plemma = row[3];
-		String pos = row[4];
-		String ppos = row[5];
-		Word w = new Word(id, form, lemma, plemma, pos, ppos);
-		ArrayList<Word> givenSentence = sentences.get(sentence);
-		givenSentence.add(w);
+			String id = row[0];
+			String form = row[1];
+			String lemma = row[2];
+			String plemma = row[3];
+			String pos = row[4];
+			String ppos = row[5];
+			Word w = new Word(id, form, lemma, plemma, pos, ppos);
+			ArrayList<Word> givenSentence = sentences.get(sentence);
+			givenSentence.add(w);
 		} catch (Exception e) {
 			System.out.println(Arrays.toString(row));
 			throw e;
@@ -138,7 +138,7 @@ public class Corpus implements Iterable<Word> {
 			int curr = (100 * i) / size;
 			if (curr > proc) {
 				proc = curr;
-				System.out.printf("%3d%%\t",	curr);
+				System.out.printf("%3d%%\t", curr);
 				if (curr % 10 == 0)
 					System.out.println();
 			}
@@ -160,15 +160,10 @@ public class Corpus implements Iterable<Word> {
 			String form = w.getForm();
 			HashMap<String, Double> wordProbs = getWordProbs(form);
 
-			// System.out.println();
-			// System.out.println(form);
 			if (!form.equals("<bos>")) {
 				HashMap<String, Double> prevProbs = table.get(table.size() - 1);
 				for (String pos : wordProbs.keySet()) {
 					double bestCombProb = -1;
-					double bestPrevprob = 0;
-					double bestPosProb = 0;
-					PosBigram bestBigram = null;
 
 					for (String prevPos : prevProbs.keySet()) {
 						PosBigram currBigram = new PosBigram(new Word(pos),
@@ -183,15 +178,10 @@ public class Corpus implements Iterable<Word> {
 
 						if (combProb > bestCombProb) {
 							bestCombProb = combProb;
-							bestBigram = currBigram;
-							bestPrevprob = prevProb;
-							bestPosProb = posProb;
+
 						}
 					}
-					// System.out.println(bestBigram + "*" + pos + " = "
-					// + bestPrevprob + "*" + bestPosProb + "*"
-					// + wordProbs.get(pos) + " = " + bestCombProb
-					// * wordProbs.get(pos));
+
 					wordProbs.put(pos, bestCombProb * wordProbs.get(pos));
 				}
 				table.add(wordProbs);
@@ -235,12 +225,6 @@ public class Corpus implements Iterable<Word> {
 		PrintWriter pw = new PrintWriter(fileName);
 		pw.append(toString());
 		pw.close();
-	}
-
-	private void printTable(ArrayList<HashMap<String, Double>> table) {
-		for (int i = 0; i < table.size(); i++) {
-			System.out.println("Column " + i + ": " + table.get(i));
-		}
 	}
 
 }
