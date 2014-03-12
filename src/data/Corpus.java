@@ -71,11 +71,8 @@ public class Corpus implements Iterable<Word> {
 		String nl = System.getProperty("line.separator");
 		StringBuilder sb = new StringBuilder();
 
-		for (ArrayList<Word> sentence : sentences) {
-			for (Word w : sentence) {
-				sb.append(w).append(nl);
-			}
-			sb.append(nl);
+		for (Sentence sentence : sentences) {
+			sb.append(sentence).append(nl);
 		}
 
 		return sb.toString();
@@ -132,10 +129,10 @@ public class Corpus implements Iterable<Word> {
 		int proc = 0;
 		int size = corpus.sentences.size();
 		for (int i = 0; i < size; i++) {
-			int curr = (100*i)/size;
-			if (curr > proc){
+			int curr = (100 * i) / size;
+			if (curr > proc) {
 				proc = curr;
-				System.out.printf("%d%% ",curr);
+				System.out.printf("%d%% ", curr);
 			}
 			Sentence sentence = corpus.sentences.get(i);
 			tag(sentence);
