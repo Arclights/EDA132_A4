@@ -12,7 +12,7 @@ public class Word {
 	public Word(String id, String form, String lemma, String plemma,
 			String pos, String ppos) {
 		this.id = id;
-		this.form = form;
+		this.form = form.toLowerCase();
 		this.lemma = lemma;
 		this.plemma = plemma;
 		this.pos = pos;
@@ -40,9 +40,9 @@ public class Word {
 	public String getPos() {
 		return pos;
 	}
-
-	public String getLemma() {
-		return lemma;
+	
+	public String getForm(){
+		return form;
 	}
 
 	public void setPpos(String ppos) {
@@ -66,5 +66,11 @@ public class Word {
 		if (obj instanceof Word)
 			return ((Word) obj).hashCode() == hashCode();
 		return false;
+	}
+	
+	@Override
+	protected Word clone(){
+		Word w = new Word(id,form,lemma,plemma,pos,ppos);
+		return w;
 	}
 }

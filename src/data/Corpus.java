@@ -1,9 +1,7 @@
 package data;
 
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -13,23 +11,18 @@ import data.bigram.WordBigram;
 
 public class Corpus implements Iterable<Word> {
 
-	private ArrayList<ArrayList<Word>> sentences;
+	private ArrayList<Sentence> sentences;
 	private HashMap<PosBigram, Double> posProbs;
 	private HashMap<WordBigram, Double> wordProb;
 
 	public Corpus() {
 		sentences = new ArrayList<>();
-		sentences.add(new ArrayList<Word>());
-		sentences.get(0).add(new Word("<BOS>"));
-		sentences.get(0).add(new Word("<EOS>"));
-
+		sentences.add(new Sentence());
 	}
 
 	void addWord(int sentence, String[] row) {
 		if (sentence == sentences.size()) {
-			ArrayList<Word> list = new ArrayList<Word>();
-			list.add(new Word("<BOS>"));
-			list.add(new Word("<EOS>"));
+			Sentence list = new Sentence();
 			sentences.add(list);
 		}
 		String id = row[0];
@@ -40,7 +33,7 @@ public class Corpus implements Iterable<Word> {
 		String ppos = row[5];
 		Word w = new Word(id, form, lemma, plemma, pos, ppos);
 		ArrayList<Word> givenSentence = sentences.get(sentence);
-		givenSentence.add(givenSentence.size() - 1, w);
+		givenSentence.add(w);
 	}
 
 	void calculateBigrams() throws FileNotFoundException {
@@ -92,7 +85,6 @@ public class Corpus implements Iterable<Word> {
 		return new CorpusIterator();
 	}
 
-
 	private class CorpusIterator implements Iterator<Word> {
 
 		int sentence = 0;
@@ -139,10 +131,10 @@ public class Corpus implements Iterable<Word> {
 
 		ArrayList<HashMap<String, Double>> table = new ArrayList<>();
 
-		for (String lemma : list) {
-			HashMap<String, Double> wordProbs = getWordProbs(lemma);
+		for (String form : list) {
+			HashMap<String, Double> wordProbs = getWordProbs(form);
 
-			if (!lemma.equals("<BOS>")) {
+			if (!form.equals("<BOS>")) {
 				HashMap<String, Double> prevProbs = table.get(table.size() - 1);
 
 				for (String pos : wordProbs.keySet()) {
@@ -172,7 +164,7 @@ public class Corpus implements Iterable<Word> {
 		// Backtrack
 		for (int i = 0; i < table.size(); i++) {
 			HashMap<String, Double> column = table.get(i);
-			String lemma = list.get(i);
+			String form = list.get(i);
 			double maxProb = -1;
 			String ppos = "";
 			for (String pos : column.keySet()) {
@@ -181,7 +173,7 @@ public class Corpus implements Iterable<Word> {
 					ppos = pos;
 				}
 			}
-			output.add(new Word("?", "?", lemma, "?", "?", ppos));
+			output.add(new Word("?", form, "?", "?", "?", ppos));
 		}
 
 		for (Word w : output)
@@ -206,13 +198,29 @@ public class Corpus implements Iterable<Word> {
 	}
 
 	public void recursiveTag(ArrayList<String> list) {
+		Sentence sentence = new Sentence();
+		for (String s : list) {
+			Word w = new Word("?", s, "?", "?", "?", "?");
+			sentence.add(w);
+		}
 		
+		System.out.println("Tegging sentence:");
+		System.out.println(sentence);
 		
+		Sentence tagged = recursiveTag(sentence,1,0,0);
+		
+		System.out.println(tagged);
 		
 	}
 	
-	private double recursiveTag(ArrayList<Word> words, ArrayList<String> list, double best) {
-		return 0;
+	private Sentence recursiveTag(Sentence words, int pos,double currentBest, double best) {
+		if (pos == words.size()) {
+			return words;
+		}
+		Word currentWord = words.get(pos);
+		
+		
+		return recursiveTag(words, pos+1, currentBest, best);
 	}
 	
 	private void printTable(ArrayList<HashMap<String, Double>> table) {

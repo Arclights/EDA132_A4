@@ -22,19 +22,19 @@ public class WordStatistics {
 		HashMap<String,String> result = new HashMap<>();
 
 		for (Word key : stats.keySet()) {
-			if (map.containsKey(key.getLemma())) {
+			if (map.containsKey(key.getForm())) {
 				int freqKey = stats.get(key);
-				int freqExisting = stats.get(map.get(key.getLemma()));
+				int freqExisting = stats.get(map.get(key.getForm()));
 				if (freqKey > freqExisting) {
-					map.put(key.getLemma(), key);
+					map.put(key.getForm(), key);
 				}
 			} else {
-				map.put(key.getLemma(), key);
+				map.put(key.getForm(), key);
 			}
 		}
 		for (String key : map.keySet()) {
 			Word w = map.get(key);
-			result.put(w.getLemma(),w.getPos());
+			result.put(w.getForm(),w.getPos());
 		}
 		return result;
 	}
