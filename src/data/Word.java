@@ -22,6 +22,10 @@ public class Word {
 	public Word(String special) {
 		this("-", special, special, special, special, special);
 	}
+	
+	public Word(int id, String form) {
+		this(""+id,form,"-","-","-","-");
+	}
 
 	@Override
 	public String toString() {

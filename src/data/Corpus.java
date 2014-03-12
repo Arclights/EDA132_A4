@@ -1,6 +1,7 @@
 package data;
 
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -126,21 +127,41 @@ public class Corpus implements Iterable<Word> {
 		return s;
 	}
 
-	public void tag(ArrayList<String> list) {
-		ArrayList<Word> output = new ArrayList<>();
+	public void tag(Corpus corpus) {
+		System.out.println("Tagging...");
+		int proc = 0;
+		int size = corpus.sentences.size();
+		for (int i = 0; i < size; i++) {
+			int curr = (100*i)/size;
+			if (curr > proc){
+				proc = curr;
+				System.out.printf("%d%% ",curr);
+			}
+			Sentence sentence = corpus.sentences.get(i);
+			tag(sentence);
+		}
+	}
+
+	public void tag(Sentence sentence) {
 
 		ArrayList<HashMap<String, Double>> table = new ArrayList<>();
 		HashMap<String, Double> bosCol = new HashMap<>();
 		bosCol.put("<BOS>", 1.0);
 		table.add(bosCol);
 
-		for (String form : list) {
+		for (Word w : sentence) {
+			String form = w.getForm();
 			HashMap<String, Double> wordProbs = getWordProbs(form);
 
-			if (!form.equals("<BOS>")) {
+			// System.out.println();
+			// System.out.println(form);
+			if (!form.equals("<bos>")) {
 				HashMap<String, Double> prevProbs = table.get(table.size() - 1);
 				for (String pos : wordProbs.keySet()) {
 					double bestCombProb = -1;
+					double bestPrevprob = 0;
+					double bestPosProb = 0;
+					PosBigram bestBigram = null;
 
 					for (String prevPos : prevProbs.keySet()) {
 						PosBigram currBigram = new PosBigram(new Word(pos),
@@ -155,8 +176,15 @@ public class Corpus implements Iterable<Word> {
 
 						if (combProb > bestCombProb) {
 							bestCombProb = combProb;
+							bestBigram = currBigram;
+							bestPrevprob = prevProb;
+							bestPosProb = posProb;
 						}
 					}
+					// System.out.println(bestBigram + "*" + pos + " = "
+					// + bestPrevprob + "*" + bestPosProb + "*"
+					// + wordProbs.get(pos) + " = " + bestCombProb
+					// * wordProbs.get(pos));
 					wordProbs.put(pos, bestCombProb * wordProbs.get(pos));
 				}
 				table.add(wordProbs);
@@ -165,9 +193,8 @@ public class Corpus implements Iterable<Word> {
 		}
 
 		// Backtrack
-		for (int i = 0; i < table.size(); i++) {
+		for (int i = 1; i < table.size(); i++) {
 			HashMap<String, Double> column = table.get(i);
-			String form = list.get(i);
 			double maxProb = -1;
 			String ppos = "";
 			for (String pos : column.keySet()) {
@@ -176,11 +203,8 @@ public class Corpus implements Iterable<Word> {
 					ppos = pos;
 				}
 			}
-			output.add(new Word("?", form, "?", "?", "?", ppos));
+			sentence.get(i).setPpos(ppos);
 		}
-
-		for (Word w : output)
-			System.out.println(w);
 	}
 
 	/**
@@ -200,7 +224,12 @@ public class Corpus implements Iterable<Word> {
 		return data;
 	}
 
-	
+	public void printToFile(String fileName) throws FileNotFoundException {
+		PrintWriter pw = new PrintWriter(fileName);
+		pw.append(toString());
+		pw.close();
+	}
+
 	private void printTable(ArrayList<HashMap<String, Double>> table) {
 		for (int i = 0; i < table.size(); i++) {
 			System.out.println("Column " + i + ": " + table.get(i));
