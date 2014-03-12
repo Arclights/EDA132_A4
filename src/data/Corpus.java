@@ -1,11 +1,21 @@
 package data;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+
+import data.bigram.Bigrams;
+import data.bigram.PosBigram;
+import data.bigram.WordBigram;
 
 public class Corpus implements Iterable<Word> {
 
-	ArrayList<ArrayList<Word>> sentences;
+	private ArrayList<ArrayList<Word>> sentences;
+	private HashMap<PosBigram, Double> posProbs;
+	private HashMap<WordBigram, Double> wordProb;
 
 	public Corpus() {
 		sentences = new ArrayList<>();
@@ -33,6 +43,35 @@ public class Corpus implements Iterable<Word> {
 		givenSentence.add(givenSentence.size() - 1, w);
 	}
 
+	void calculateBigrams() throws FileNotFoundException {
+		posProbs = getPosBigramsProbabilities();
+		wordProb = getWordBigramsProbabilities();
+	}
+
+	private HashMap<PosBigram, Double> getPosBigramsProbabilities() {
+
+		Bigrams<PosBigram> b = new Bigrams<>();
+		for (ArrayList<Word> sentence : sentences) {
+			for (int i = 1; i < sentence.size(); i++) {
+				PosBigram bigram = new PosBigram(sentence.get(i),
+						sentence.get(i - 1));
+				b.addBigram(bigram);
+			}
+		}
+		return b.getProbabilities();
+	}
+
+	private HashMap<WordBigram, Double> getWordBigramsProbabilities() {
+		Bigrams<WordBigram> b = new Bigrams<>();
+		for (ArrayList<Word> sentence : sentences) {
+			for (int i = 0; i < sentence.size(); i++) {
+				WordBigram bigram = new WordBigram(sentence.get(i));
+				b.addBigram(bigram);
+			}
+		}
+		return b.getProbabilities();
+	}
+
 	@Override
 	public String toString() {
 		String nl = System.getProperty("line.separator");
@@ -52,10 +91,7 @@ public class Corpus implements Iterable<Word> {
 	public Iterator<Word> iterator() {
 		return new CorpusIterator();
 	}
-	
-	public Iterator<Word> getCompleteIterator(){
-		return new CompleteCorpusIterator();
-	}
+
 
 	private class CorpusIterator implements Iterator<Word> {
 
@@ -97,35 +133,82 @@ public class Corpus implements Iterable<Word> {
 				+ " sentences\n\t" + words + " words";
 		return s;
 	}
-	
-	private class CompleteCorpusIterator implements Iterator<Word> {
 
-		int sentence = 0;
-		int word = 0;
+	public void tag(ArrayList<String> list) {
+		ArrayList<Word> output = new ArrayList<>();
 
-		@Override
-		public boolean hasNext() {
-			if (sentence == sentences.size())
-				return false;
-			return true;
-		}
+		ArrayList<HashMap<String, Double>> table = new ArrayList<>();
 
-		@Override
-		public Word next() {
-			Word w = sentences.get(sentence).get(word);
-			word++;
-			if (sentences.get(sentence).size() == word) {
-				word = 0;
-				sentence++;
+		for (String lemma : list) {
+			HashMap<String, Double> wordProbs = getWordProbs(lemma);
+
+			if (!lemma.equals("<BOS>")) {
+				HashMap<String, Double> prevProbs = table.get(table.size() - 1);
+
+				for (String pos : wordProbs.keySet()) {
+					double bestCombProb = -1;
+
+					for (String prevPos : prevProbs.keySet()) {
+						PosBigram currBigram = new PosBigram(new Word(pos),
+								new Word(prevPos));
+						double posProb = 0;
+						if (posProbs.containsKey(currBigram)) {
+							posProb = posProbs.get(currBigram);
+						}
+
+						double prevProb = prevProbs.get(prevPos);
+						double combProb = posProb * prevProb;
+
+						if (combProb > bestCombProb) {
+							bestCombProb = combProb;
+						}
+					}
+					wordProbs.put(pos, bestCombProb * wordProbs.get(pos));
+				}
 			}
-			return w;
+			table.add(wordProbs);
 		}
 
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-
+		// Backtrack
+		for (int i = 0; i < table.size(); i++) {
+			HashMap<String, Double> column = table.get(i);
+			String lemma = list.get(i);
+			double maxProb = -1;
+			String ppos = "";
+			for (String pos : column.keySet()) {
+				if (column.get(pos) > maxProb) {
+					maxProb = column.get(pos);
+					ppos = pos;
+				}
+			}
+			output.add(new Word("?", "?", lemma, "?", "?", ppos));
 		}
 
+		for (Word w : output)
+			System.out.println(w);
 	}
+
+	/**
+	 * Gets each POS the lemma can have and returns the probabilities of the
+	 * lemma being that POS mapped to the respective POS
+	 * 
+	 * @param lemma
+	 * @return
+	 */
+	private HashMap<String, Double> getWordProbs(String lemma) {
+		HashMap<String, Double> data = new HashMap<>();
+		for (WordBigram wb : wordProb.keySet()) {
+			if (wb.getLemma().equals(lemma)) {
+				data.put(wb.getPos(), wordProb.get(wb));
+			}
+		}
+		return data;
+	}
+
+	private void printTable(ArrayList<HashMap<String, Double>> table) {
+		for (int i = 0; i < table.size(); i++) {
+			System.out.println("Column " + i + ": " + table.get(i));
+		}
+	}
+
 }
