@@ -146,6 +146,7 @@ public class Corpus implements Iterable<Word> {
 			tag(sentence);
 		}
 		System.out.printf("100%%\t");
+		System.out.println();
 	}
 
 	public void tag(Sentence sentence) {
