@@ -68,9 +68,4 @@ public class Word {
 		return false;
 	}
 	
-	@Override
-	protected Word clone(){
-		Word w = new Word(id,form,lemma,plemma,pos,ppos);
-		return w;
-	}
 }

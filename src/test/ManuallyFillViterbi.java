@@ -8,7 +8,6 @@ import data.CorpusFileReader;
 
 public class ManuallyFillViterbi {
 	public static void main(String[] args) throws IOException {
-
 		Corpus c = CorpusFileReader.createCorpus(data.Constants.CORPUS_TRAIN);
 
 		ArrayList<String> list = new ArrayList<>();
@@ -16,7 +15,7 @@ public class ManuallyFillViterbi {
 				.split("\\s")) {
 			list.add(s);
 		}
-		c.recursiveTag(list);
+		c.tag(list);
 
 	}
 }
