@@ -21,11 +21,9 @@ public class Sentence extends ArrayList<Word> {
 	public String toString() {
 		String nl = System.getProperty("line.separator");
 		StringBuilder sb = new StringBuilder();
-		for(Word w : this) {
-			sb.append(w).append(nl);
+		for (int i = 1; i < size()-1; i++) {
+			sb.append(get(i)).append(nl);
 		}
-		
-		
 		return sb.toString();
 	}
 	
