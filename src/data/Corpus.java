@@ -130,7 +130,22 @@ public class Corpus implements Iterable<Word> {
 		return s;
 	}
 
-	public void tag(Corpus corpus) {
+	public void tagBaseline(Corpus corpus) {
+		for (Word w : corpus) {
+			HashMap<String, Double> wordProbs = getWordProbs(w.form);
+			double largestWordProb = 0;
+			String bestPos = "";
+			for (String pos : wordProbs.keySet()) {
+				if (wordProbs.get(pos) > largestWordProb) {
+					largestWordProb = wordProbs.get(pos);
+					bestPos = pos;
+				}
+			}
+			w.setPpos(bestPos);
+		}
+	}
+
+	public void tagViterbi(Corpus corpus) {
 		System.out.println("Tagging...");
 		int proc = 0;
 		int size = corpus.sentences.size();
@@ -143,13 +158,13 @@ public class Corpus implements Iterable<Word> {
 					System.out.println();
 			}
 			Sentence sentence = corpus.sentences.get(i);
-			tag(sentence);
+			tagViterbi(sentence);
 		}
 		System.out.printf("100%%\t");
 		System.out.println();
 	}
 
-	public void tag(Sentence sentence) {
+	public void tagViterbi(Sentence sentence) {
 
 		ArrayList<HashMap<String, Double>> table = new ArrayList<>();
 		HashMap<String, Double> bosCol = new HashMap<>();
@@ -203,18 +218,18 @@ public class Corpus implements Iterable<Word> {
 			sentence.get(i).setPpos(ppos);
 		}
 	}
-
+	
 	/**
-	 * Gets each POS the lemma can have and returns the probabilities of the
-	 * lemma being that POS mapped to the respective POS
+	 * Gets each POS the form can have and returns the probabilities of the form
+	 * being that POS mapped to the respective POS
 	 * 
-	 * @param lemma
+	 * @param form
 	 * @return
 	 */
-	private HashMap<String, Double> getWordProbs(String lemma) {
+	private HashMap<String, Double> getWordProbs(String form) {
 		HashMap<String, Double> data = new HashMap<>();
 		for (WordBigram wb : wordProb.keySet()) {
-			if (wb.getLemma().equals(lemma)) {
+			if (wb.getForm().equals(form)) {
 				data.put(wb.getPos(), wordProb.get(wb));
 			}
 		}

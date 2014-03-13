@@ -12,7 +12,7 @@ public class ManuallyFillViterbi {
 		Corpus develCorpus = CorpusFileReader
 				.createCorpus(data.Constants.CORPUS_DEVELOPMENT);
 
-		trainCorpus.tag(develCorpus);
+		trainCorpus.tagViterbi(develCorpus);
 		develCorpus.printToFile(data.Constants.TAGGED_DATA);
 
 	}

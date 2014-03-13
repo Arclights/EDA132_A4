@@ -8,7 +8,7 @@ public class WordBigram extends Bigram {
 		super(w.getForm(),w.getPos());
 	}
 
-	public String getLemma() {
+	public String getForm() {
 		return prob;
 	}
 	

@@ -23,7 +23,7 @@ public class ViterbiTagger {
 			Corpus testCorpus = null;
 			trainingCorpus = CorpusFileReader.createCorpus(train);
 			testCorpus = CorpusFileReader.createCorpus(test);
-			trainingCorpus.tag(testCorpus);
+			trainingCorpus.tagViterbi(testCorpus);
 
 			testCorpus.printToFile(destination);
 
