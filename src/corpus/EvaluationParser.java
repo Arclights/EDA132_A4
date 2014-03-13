@@ -23,7 +23,7 @@ public class EvaluationParser {
 	}
 
 	public static void main(String[] args) throws IOException {
-		Corpus corp = CorpusFileReader.createCorpus(TAGGED_DATA);
+		Corpus corp = CorpusFileReader.createCorpus("data/english_corpus/CoNLL2009-ST-English-development-pos.txt");
 		Evaluation evaluation = eval(corp);
 
 		evaluation.printAccuracy();

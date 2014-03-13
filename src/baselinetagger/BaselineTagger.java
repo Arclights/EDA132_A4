@@ -1,47 +1,71 @@
 package baselinetagger;
 
-import static data.Constants.CORPUS_TRAIN;
-
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 
+import corpus.Evaluation;
 import data.Corpus;
 import data.CorpusFileReader;
 import data.Word;
 
 public class BaselineTagger {
 
-	private static WordStatistics buildStatistics(Corpus corp)
-			throws IOException {
-		WordStatistics ws = new WordStatistics();
-
-		for (Word w : corp) {
-			ws.addWord(w);
+	public static void main(String[] args) {
+		if (args.length != 3) {
+			err(null);
 		}
 
-		return ws;
+		String train = args[0];
+		String test = args[1];
+		String destination = args[2];
 
+		try {
+			Corpus trainingCorpus = null;
+			Corpus testCorpus = null;
+			trainingCorpus = CorpusFileReader.createCorpus(train);
+			testCorpus = CorpusFileReader.createCorpus(test);
+
+			System.out.println("Buidling wordstatistics...");
+			WordStatistics ws = new WordStatistics(trainingCorpus);
+//			System.out.println(ws);
+			System.out.println("Tagging...");
+			ws.tag(testCorpus);
+
+			testCorpus.printToFile(destination);
+
+			System.out.println("Tagging done, calculating accuracy...");
+
+			Evaluation eval;
+			eval = eval(testCorpus);
+
+			eval.printAccuracy();
+
+			System.out.println("Thank you and have a nice day!");
+		} catch (Exception e) {
+			err(e.getMessage());
+		}
 	}
 
-	private static void tag(WordStatistics ws, Corpus corp) throws IOException {
-		Tagger tag = new Tagger(ws);
-		PrintWriter pw = new PrintWriter(new File("data/tagged"));
+	private static void err(String reason) {
+		if (reason != null) {
+			System.out.println("Error in running the program...");
+			System.out.println(reason);
+			System.out.println();
+		}
+		System.out.println("To run the program, use the following syntax");
+		System.out
+				.println("java -jar <jarfile> <trainCorpus> <testCorpus> <destinationFile>");
+		System.exit(0);
+	}
+
+	public static Evaluation eval(Corpus corp) throws IOException {
+
+		Evaluation evaluation = new Evaluation();
 
 		for (Word w : corp) {
-			w.setPpos(tag.assignPos(w));
-			pw.append(w.toString()).append("\n");
+			evaluation.addRow(w);
 		}
 
-		pw.close();
+		return evaluation;
 
-	}
-
-	public static void main(String[] args) throws IOException {
-		Corpus corp = CorpusFileReader.createCorpus(CORPUS_TRAIN);
-		WordStatistics ws = buildStatistics(corp);
-		System.out.println("WordStatistics done...");
-		tag(ws, corp);
-		System.out.println("Tagging done!");
 	}
 }
