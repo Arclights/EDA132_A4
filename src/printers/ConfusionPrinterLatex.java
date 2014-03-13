@@ -58,7 +58,7 @@ public class ConfusionPrinterLatex {
 	}
 
 	private static String getCell(String content) {
-		return content.replace("$", "\\$");
+		return content.replace("$", "\\$").replace("#", "\\#");
 	}
 
 }

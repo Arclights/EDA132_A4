@@ -1,4 +1,4 @@
-package corpus;
+package evaluation;
 
 import java.util.HashMap;
 

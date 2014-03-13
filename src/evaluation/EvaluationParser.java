@@ -1,4 +1,4 @@
-package corpus;
+package evaluation;
 
 import static data.Constants.*;
 
@@ -23,7 +23,7 @@ public class EvaluationParser {
 	}
 
 	public static void main(String[] args) throws IOException {
-		Corpus corp = CorpusFileReader.createCorpus("data/english_corpus/CoNLL2009-ST-English-development-pos.txt");
+		Corpus corp = CorpusFileReader.createCorpus("baseline_tagger_tagged_corp.txt");
 		Evaluation evaluation = eval(corp);
 
 		evaluation.printAccuracy();

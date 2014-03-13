@@ -1,4 +1,4 @@
-package corpus;
+package evaluation;
 
 import static data.CorpusFileReader.createCorpus;
 

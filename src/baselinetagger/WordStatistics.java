@@ -61,7 +61,16 @@ public class WordStatistics {
 
 	@Override
 	public String toString() {
-		return stats.toString();
+		StringBuilder sb = new StringBuilder();
+		for (String form : stats.keySet()) {
+			sb.append(form).append("\n");
+			HashMap<String, Integer> poses = stats.get(form);
+			for (String pos : poses.keySet()) {
+				sb.append("\t").append(pos).append(": ").append(poses.get(pos))
+						.append("\n");
+			}
+		}
+		return sb.toString();
 	}
 
 }

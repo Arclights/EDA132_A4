@@ -1,4 +1,4 @@
-package corpus;
+package evaluation;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -19,19 +19,20 @@ public class Evaluation {
 	}
 
 	public void addRow(Word w) {
-		if (confTable.containsKey(w.getPos())) {
-			HashMap<String, Integer> tabelRow = confTable.get(w.getPos());
-			int count = tabelRow.containsKey(w.getPpos()) ? tabelRow.get(w
-					.getPpos()) : 0;
-			tabelRow.put(w.getPpos(), count + 1);
+		String pos = w.getPos();
+		String ppos = w.getPpos();
+		if (confTable.containsKey(pos)) {
+			HashMap<String, Integer> tabelRow = confTable.get(pos);
+			int count = tabelRow.containsKey(ppos) ? tabelRow.get(ppos) : 0;
+			tabelRow.put(ppos, count + 1);
 		} else {
 			HashMap<String, Integer> tableRow = new HashMap<>();
-			tableRow.put(w.getPpos(), 1);
-			confTable.put(w.getPos(), tableRow);
+			tableRow.put(ppos, 1);
+			confTable.put(ppos, tableRow);
 		}
 
 		totPos++;
-		if (w.getPos().equals(w.getPpos())) {
+		if (pos.equals(ppos)) {
 			correctPos++;
 		}
 	}

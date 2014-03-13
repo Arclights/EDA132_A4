@@ -1,11 +1,12 @@
 package baselinetagger;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
-import corpus.Evaluation;
 import data.Corpus;
 import data.CorpusFileReader;
 import data.Word;
+import evaluation.Evaluation;
 
 public class BaselineTagger {
 
@@ -26,7 +27,9 @@ public class BaselineTagger {
 
 			System.out.println("Buidling wordstatistics...");
 			WordStatistics ws = new WordStatistics(trainingCorpus);
-//			System.out.println(ws);
+			PrintWriter pw=new PrintWriter("test");
+			pw.write(ws.toString());
+			pw.close();
 			System.out.println("Tagging...");
 			ws.tag(testCorpus);
 

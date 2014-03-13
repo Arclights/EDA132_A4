@@ -1,13 +1,13 @@
-package test;
+package viterbitagger;
 
 import java.io.IOException;
 
-import corpus.Evaluation;
 import data.Corpus;
 import data.CorpusFileReader;
 import data.Word;
+import evaluation.Evaluation;
 
-public class TagFile {
+public class ViterbiTagger {
 
 	public static void main(String[] args) {
 		if (args.length != 3) {
