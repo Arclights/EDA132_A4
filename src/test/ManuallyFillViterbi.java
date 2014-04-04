@@ -1,12 +1,10 @@
 package test;
 
-import java.io.IOException;
-
 import data.Corpus;
 import data.CorpusFileReader;
 
 public class ManuallyFillViterbi {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		Corpus trainCorpus = CorpusFileReader
 				.createCorpus(data.Constants.CORPUS_TRAIN);
 		Corpus develCorpus = CorpusFileReader

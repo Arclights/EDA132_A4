@@ -35,7 +35,7 @@ public class ConfusionPrinterLatex {
 	}
 
 	private static HashMap<String, Integer> printTitleRow(Set<String> titles) {
-		HashMap<String, Integer> columns = new HashMap<>();
+		HashMap<String, Integer> columns = new HashMap<String, Integer>();
 		int columnCounter = 0;
 		System.out.print("");
 		for (String title : titles) {

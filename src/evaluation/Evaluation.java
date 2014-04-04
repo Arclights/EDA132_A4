@@ -15,7 +15,7 @@ public class Evaluation {
 	HashMap<String, HashMap<String, Integer>> confTable;
 
 	public Evaluation() {
-		confTable = new HashMap<>();
+		confTable = new HashMap<String, HashMap<String, Integer>>();
 	}
 
 	public void addRow(Word w) {
@@ -26,7 +26,7 @@ public class Evaluation {
 			int count = tabelRow.containsKey(ppos) ? tabelRow.get(ppos) : 0;
 			tabelRow.put(ppos, count + 1);
 		} else {
-			HashMap<String, Integer> tableRow = new HashMap<>();
+			HashMap<String, Integer> tableRow = new HashMap<String, Integer>();
 			tableRow.put(ppos, 1);
 			confTable.put(ppos, tableRow);
 		}

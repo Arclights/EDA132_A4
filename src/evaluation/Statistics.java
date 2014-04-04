@@ -9,8 +9,8 @@ public class Statistics {
 	private HashMap<String, Integer> posFreq;
 
 	public Statistics() {
-		wordFreq = new HashMap<>();
-		posFreq = new HashMap<>();
+		wordFreq = new HashMap<String, Integer>();
+		posFreq = new HashMap<String, Integer>();
 	}
 
 	public void addWord(Word w) {

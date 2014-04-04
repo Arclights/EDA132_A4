@@ -28,7 +28,7 @@ public class StatisticsParser {
 		System.out.println("Files stored!");
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		Corpus corp = createCorpus(data.Constants.CORPUS_TRAIN);
 		parse(corp);
 	}

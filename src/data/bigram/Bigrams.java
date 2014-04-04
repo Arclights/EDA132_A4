@@ -8,8 +8,8 @@ public class Bigrams<E extends Bigram> {
 	HashMap<String, Integer> n;
 
 	public Bigrams() {
-		bigrams = new HashMap<>();
-		n = new HashMap<>();
+		bigrams = new HashMap<E, Integer>();
+		n = new HashMap<String, Integer>();
 	}
 
 	public void addBigram(E bigram) {
@@ -21,7 +21,7 @@ public class Bigrams<E extends Bigram> {
 	}
 
 	public HashMap<E, Double> getProbabilities() {
-		HashMap<E, Double> out = new HashMap<>();
+		HashMap<E, Double> out = new HashMap<E, Double>();
 		for (E b : bigrams.keySet()) {
 			out.put(b, bigrams.get(b) / (double)n.get(b.given));
 		}

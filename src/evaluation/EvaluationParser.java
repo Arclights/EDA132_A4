@@ -1,7 +1,5 @@
 package evaluation;
 
-import static data.Constants.*;
-
 import java.io.IOException;
 
 import data.Corpus;
@@ -22,7 +20,7 @@ public class EvaluationParser {
 
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		Corpus corp = CorpusFileReader.createCorpus("baseline_tagger_tagged_corp.txt");
 		Evaluation evaluation = eval(corp);
 

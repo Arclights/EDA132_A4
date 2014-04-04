@@ -17,7 +17,7 @@ public class ConfusionPrinterDefault {
 			}
 		}
 
-		HashMap<String, Integer> columns = new HashMap<>();
+		HashMap<String, Integer> columns = new HashMap<String, Integer>();
 		int columnCounter = 0;
 		int rowLength = 0;
 		// Head

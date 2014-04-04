@@ -19,11 +19,11 @@ public class Corpus implements Iterable<Word> {
 	private String mostFrequentTag;
 
 	public Corpus() {
-		sentences = new ArrayList<>();
+		sentences = new ArrayList<Sentence>();
 		sentences.add(new Sentence());
 	}
 
-	void addWord(int sentence, String[] row) {
+	void addWord(int sentence, String[] row) throws Exception {
 		if (sentence == sentences.size()) {
 			Sentence list = new Sentence();
 			sentences.add(list);
@@ -53,7 +53,7 @@ public class Corpus implements Iterable<Word> {
 
 	private HashMap<PosBigram, Double> getPosBigramsProbabilities() {
 
-		Bigrams<PosBigram> b = new Bigrams<>();
+		Bigrams<PosBigram> b = new Bigrams<PosBigram>();
 		for (ArrayList<Word> sentence : sentences) {
 			for (int i = 1; i < sentence.size(); i++) {
 				PosBigram bigram = new PosBigram(sentence.get(i),
@@ -65,7 +65,7 @@ public class Corpus implements Iterable<Word> {
 	}
 
 	private HashMap<WordBigram, Double> getWordBigramsProbabilities() {
-		Bigrams<WordBigram> b = new Bigrams<>();
+		Bigrams<WordBigram> b = new Bigrams<WordBigram>();
 		for (ArrayList<Word> sentence : sentences) {
 			for (int i = 0; i < sentence.size(); i++) {
 				WordBigram bigram = new WordBigram(sentence.get(i));
@@ -169,7 +169,7 @@ public class Corpus implements Iterable<Word> {
 	}
 
 	private String mostFrequentTag() {
-		HashMap<String, Integer> posFreq = new HashMap<>();
+		HashMap<String, Integer> posFreq = new HashMap<String, Integer>();
 
 		for (Sentence s : sentences) {
 			for (Word w : s) {
@@ -204,7 +204,7 @@ public class Corpus implements Iterable<Word> {
 	 * @return
 	 */
 	private HashMap<String, Double> getWordProbs(String form) {
-		HashMap<String, Double> data = new HashMap<>();
+		HashMap<String, Double> data = new HashMap<String, Double>();
 		for (WordBigram wb : wordProb.keySet()) {
 			if (wb.getForm().equals(form)) {
 				data.put(wb.getPos(), wordProb.get(wb));

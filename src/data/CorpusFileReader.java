@@ -5,12 +5,11 @@ import static data.Constants.CORPUS_DEVELOPMENT;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 
 public class CorpusFileReader {
 
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		Corpus c = createCorpus(CORPUS_DEVELOPMENT);
 		for (Word w : c) {
 			System.out.println(w);
@@ -18,7 +17,7 @@ public class CorpusFileReader {
 //		System.out.println(c);
 	}
 
-	public static Corpus createCorpus(String filePath) throws IOException {
+	public static Corpus createCorpus(String filePath) throws Exception {
 		System.out.printf("Creating corups from '%s'\n",filePath);
 		Corpus corpus = new Corpus();
 		int sentence = 0;
