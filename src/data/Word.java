@@ -26,6 +26,15 @@ public class Word {
 	public Word(int id, String form) {
 		this(""+id,form,"-","-","-","-");
 	}
+	
+	private Word(Word w) {
+		this.id = w.id;
+		this.form = w.form;
+		this.lemma = w.lemma;
+		this.plemma = w.plemma;
+		this.pos = w.pos;
+		this.ppos = w.ppos;
+	}
 
 	@Override
 	public String toString() {
@@ -70,6 +79,12 @@ public class Word {
 		if (obj instanceof Word)
 			return ((Word) obj).hashCode() == hashCode();
 		return false;
+	}
+	
+	@Override
+	protected Word clone() {
+		Word w = new Word(this);
+		return w;
 	}
 	
 }

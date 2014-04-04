@@ -27,5 +27,13 @@ public class Sentence extends ArrayList<Word> {
 		return sb.toString();
 	}
 	
+	@Override
+	public Sentence clone() {
+		Sentence s = new Sentence();
+		for (int i = 1; i < size()-1;i++)
+			s.add(get(i).clone());
+		
+		return s;
+	}
 
 }

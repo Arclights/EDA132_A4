@@ -16,6 +16,7 @@ public class Corpus implements Iterable<Word> {
 	private ArrayList<Sentence> sentences;
 	private HashMap<PosBigram, Double> posProbs;
 	private HashMap<WordBigram, Double> wordProb;
+	private String mostFrequentTag;
 
 	public Corpus() {
 		sentences = new ArrayList<>();
@@ -46,6 +47,8 @@ public class Corpus implements Iterable<Word> {
 	void calculateBigrams() throws FileNotFoundException {
 		posProbs = getPosBigramsProbabilities();
 		wordProb = getWordBigramsProbabilities();
+		mostFrequentTag = mostFrequentTag();
+		System.out.println("Most freq tag: " + mostFrequentTag);
 	}
 
 	private HashMap<PosBigram, Double> getPosBigramsProbabilities() {
@@ -158,67 +161,41 @@ public class Corpus implements Iterable<Word> {
 					System.out.println();
 			}
 			Sentence sentence = corpus.sentences.get(i);
-			tagViterbi(sentence);
+			Viterbi viterbi = new Viterbi(sentence, posProbs, wordProb,mostFrequentTag);
+			viterbi.calculate();
 		}
 		System.out.printf("100%%\t");
 		System.out.println();
 	}
 
-	public void tagViterbi(Sentence sentence) {
+	private String mostFrequentTag() {
+		HashMap<String, Integer> posFreq = new HashMap<>();
 
-		ArrayList<HashMap<String, Double>> table = new ArrayList<>();
-		HashMap<String, Double> bosCol = new HashMap<>();
-		bosCol.put("<BOS>", 1.0);
-		table.add(bosCol);
-
-		for (Word w : sentence) {
-			String form = w.getForm();
-			HashMap<String, Double> wordProbs = getWordProbs(form);
-
-			if (!form.equals("<bos>")) {
-				HashMap<String, Double> prevProbs = table.get(table.size() - 1);
-				for (String pos : wordProbs.keySet()) {
-					double bestCombProb = -1;
-
-					for (String prevPos : prevProbs.keySet()) {
-						PosBigram currBigram = new PosBigram(new Word(pos),
-								new Word(prevPos));
-						double posProb = 0;
-						if (posProbs.containsKey(currBigram)) {
-							posProb = posProbs.get(currBigram);
-						}
-
-						double prevProb = prevProbs.get(prevPos);
-						double combProb = posProb * prevProb;
-
-						if (combProb > bestCombProb) {
-							bestCombProb = combProb;
-
-						}
-					}
-
-					wordProbs.put(pos, bestCombProb * wordProbs.get(pos));
+		for (Sentence s : sentences) {
+			for (Word w : s) {
+				String word = w.getPos();
+				Integer i = posFreq.get(word);
+				if (i == null) {
+					i = 0;
 				}
-				table.add(wordProbs);
+				i++;
+				posFreq.put(word, i);
 			}
-
 		}
 
-		// Backtrack
-		for (int i = 1; i < table.size(); i++) {
-			HashMap<String, Double> column = table.get(i);
-			double maxProb = -1;
-			String ppos = "-";
-			for (String pos : column.keySet()) {
-				if (column.get(pos) > maxProb) {
-					maxProb = column.get(pos);
-					ppos = pos;
-				}
+		String tag = "";
+		int freq = -1;
+
+		for (String word : posFreq.keySet()) {
+			int f = posFreq.get(word);
+			if (f > freq) {
+				freq = f;
+				tag = word;
 			}
-			sentence.get(i).setPpos(ppos);
 		}
+		return tag;
 	}
-	
+
 	/**
 	 * Gets each POS the form can have and returns the probabilities of the form
 	 * being that POS mapped to the respective POS
